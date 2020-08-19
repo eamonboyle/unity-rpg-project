@@ -3,13 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace RPG.Combat
+namespace RPG.Core
 {
     public class Health : MonoBehaviour
     {
         [SerializeField] private float health = 100f;
 
         private bool dead = false;
+        private CapsuleCollider capsuleCollider;
+
+        private void Start()
+        {
+            capsuleCollider = GetComponent<CapsuleCollider>();
+        }
 
         public bool IsDead()
         {
@@ -27,8 +33,11 @@ namespace RPG.Combat
             if (health <= 0 && !dead)
             {
                 GetComponent<Animator>().SetTrigger("die");
-                GetComponent<CapsuleCollider>().enabled = false;
-                GetComponent<NavMeshAgent>().enabled = false;
+
+                if (capsuleCollider != null) capsuleCollider.enabled = false;
+
+                GetComponent<ActionScheduler>().CancelCurrentAction();
+
                 dead = true;
             }
         }
